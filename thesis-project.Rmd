@@ -1,0 +1,25 @@
+---
+title: "thesis-project"
+author: "Yuqing Liu"
+date: "2023-11-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(haven)
+```
+
+## Import datasets
+```{r}
+CDQ_J <- read_xpt("./CDQ_J.XPT")
+DIQ_J <- read_xpt("./DIQ_J.XPT")
+MCQ_J <- read_xpt("./MCQ_J.XPT")
+
+
+```
+
+
