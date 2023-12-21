@@ -5,21 +5,81 @@ date: "2023-11-13"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
 library(haven)
+library(NHANES)
+library(nhanesA) 
+library(knitr )
+library(tidyverse)
 ```
 
 ## Import datasets
-```{r}
-CDQ_J <- read_xpt("./CDQ_J.XPT")
-DIQ_J <- read_xpt("./DIQ_J.XPT")
-MCQ_J <- read_xpt("./MCQ_J.XPT")
 
+```{r}
+nhanesTables(data_group = 'DEMO', year = 2013)
+kable(nhanesTables(data_group = 'DEMO', year = 2013))
+```
+
+```{r}
+kable(nhanesTables(data_group = 'EXAM', year = 2013))
+```
+
+```{r}
+kable(nhanesTableVars(data_group = 'DEMO', nh_table='DEMO_H', namesonly = FALSE))
+```
+
+
+```{r}
+demo <- nhanes('DEMO_H')
+```
+
+
+Import data from 2011
+```{r}
+BPX_G <- nhanes('BPX_G') # bmi 2011 -2012
 
 ```
+
+
+CRP data is available from 2015-2020
+
+```{r}
+CRP_15_16 <- nhanes('HSCRP_I')
+CRP_17_18 <- nhanes('HSCRP_J')
+CRP_17_20 <- nhanes('P_HSCRP')
+```
+
+Cancer data question MCQ220 in MCQ questionnaire from 2015-2020
+
+```{r}
+medical_2015_2016 <- nhanes('MCQ_I')
+medical_2017_2018 <- nhanes('MCQ_J')
+medical_2017_2020 <- nhanes('P_MCQ')
+```
+
+filter only the cancer patients
+```{r}
+cancer_2015_2016 = medical_2015_2016 |> filter(MCQ220 == 1)
+cancer_2017_2018 = medical_2017_2018 |> filter(MCQ220 == 1)
+cancer_2017_2020 = medical_2017_2020 |> filter(MCQ220 == 1)
+```
+
+
+```{r}
+# Merge the datasets based on the unique identifier
+merged_data <- merge(cancer_2017_2018, cancer_2017_2020, by = "SEQN", all = TRUE)
+merged_data <- merge(cancer_2015_2016, merged_data, by = "SEQN", all = TRUE)
+
+# Check for duplicates in the merged dataset
+duplicates <- merged_data[duplicated(merged_data$SEQN), ]
+
+# Display the duplicated observations
+print(duplicates)
+```
+
 
 
